@@ -43,9 +43,22 @@ export default function UserRoutes(app, db) {
     }
     res.json(currentUser);
   };
+  const findUsersForCourse = (req, res) => {
+    res.json(dao.findUsersForCourse(req.params.cid));
+  };
+  const createUser = (req, res) => {
+    res.json(dao.createUser(req.body));
+  };
+  const deleteUser = (req, res) => {
+    dao.deleteUser(req.params.userId);
+    res.sendStatus(200);
+  };
   app.post("/api/users/signup", signup);
   app.post("/api/users/signin", signin);
   app.post("/api/users/signout", signout);
   app.get("/api/users/profile", profile);
   app.put("/api/users/:userId", updateUser);
+  app.get("/api/courses/:cid/users", findUsersForCourse);
+  app.post("/api/users", createUser);
+  app.delete("/api/users/:userId", deleteUser);
 }

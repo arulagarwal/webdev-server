@@ -14,11 +14,25 @@ export default function UsersDao(db) {
     users.find((user) => user._id === userId);
   const updateUser = (userId, user) =>
     (users = users.map((u) => (u._id === userId ? user : u)));
+  const findUsersForCourse = (courseId) => {
+    const { enrollments } = db;
+    return users.filter((user) =>
+      enrollments.some(
+        (enrollment) =>
+          enrollment.user === user._id && enrollment.course === courseId,
+      ),
+    );
+  };
+  const deleteUser = (userId) => {
+    users = users.filter((user) => user._id !== userId);
+  };
   return {
     findUserByCredentials,
     createUser,
     findUserByUsername,
     findUserById,
     updateUser,
+    findUsersForCourse,
+    deleteUser,
   };
 }
