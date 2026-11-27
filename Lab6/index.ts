@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import TodoRoutes from "./Todos/routes";
 export default function Lab6(app) {
   app.get("/api/lab6/status", (req, res) => {
     const connected = mongoose.connection.readyState === 1;
@@ -10,4 +11,5 @@ export default function Lab6(app) {
         : "DATABASE_CONNECTION_STRING is not set; using the local fallback.",
     });
   });
+  TodoRoutes(app);
 }

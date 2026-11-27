@@ -1,38 +1,21 @@
+import model from "./model";
 import { v4 as uuidv4 } from "uuid";
-export default function UsersDao(db) {
-  let { users } = db;
+export default function UsersDao() {
+  const findAllUsers = () => model.find();
+  const findUserById = (userId) => model.findById(userId);
+  const findUserByUsername = (username) =>
+    model.findOne({ username: username });
   const findUserByCredentials = (username, password) =>
-    users.find((user) => user.username === username && user.password === password);
+    model.findOne({ username, password });
+  const updateUser = (userId, user) =>
+    model.updateOne({ _id: userId }, { $set: user });
+  const deleteUser = (userId) => model.deleteOne({ _id: userId });
   const createUser = (user) => {
     const newUser = { ...user, _id: uuidv4() };
-    users = [...users, newUser];
-    return newUser;
-  };
-  const findUserByUsername = (username) =>
-    users.find((user) => user.username === username);
-  const findUserById = (userId) =>
-    users.find((user) => user._id === userId);
-  const updateUser = (userId, user) =>
-    (users = users.map((u) => (u._id === userId ? user : u)));
-  const findUsersForCourse = (courseId) => {
-    const { enrollments } = db;
-    return users.filter((user) =>
-      enrollments.some(
-        (enrollment) =>
-          enrollment.user === user._id && enrollment.course === courseId,
-      ),
-    );
-  };
-  const deleteUser = (userId) => {
-    users = users.filter((user) => user._id !== userId);
+    return model.create(newUser);
   };
   return {
-    findUserByCredentials,
-    createUser,
-    findUserByUsername,
-    findUserById,
-    updateUser,
-    findUsersForCourse,
-    deleteUser,
+    createUser, findAllUsers, findUserById,
+    findUserByUsername, findUserByCredentials, updateUser, deleteUser,
   };
 }
