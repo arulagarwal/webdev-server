@@ -34,13 +34,32 @@ export default function UserRoutes(app, db) {
     }
     res.json(currentUser);
   };
+  const findAllUsers = async (req, res) => {
+    const { role, name } = req.query;
+    if (role) {
+      const users = await dao.findUsersByRole(role);
+      res.json(users);
+      return;
+    }
+    if (name) {
+      const users = await dao.findUsersByPartialName(name);
+      res.json(users);
+      return;
+    }
+    const users = await dao.findAllUsers();
+    res.json(users);
+  };
+  const findUserById = async (req, res) => {
+    const user = await dao.findUserById(req.params.userId);
+    res.json(user);
+  };
   const updateUser = async (req, res) => {
-    const userId = req.params.userId;
+    const { userId } = req.params;
     const userUpdates = req.body;
     await dao.updateUser(userId, userUpdates);
-    const currentUser = await dao.findUserById(userId);
-    if (req.session["currentUser"]?._id === userId) {
-      req.session["currentUser"] = currentUser;
+    const currentUser = req.session["currentUser"];
+    if (currentUser && currentUser._id === userId) {
+      req.session["currentUser"] = { ...currentUser, ...userUpdates };
     }
     res.json(currentUser);
   };
@@ -57,18 +76,20 @@ export default function UserRoutes(app, db) {
     );
   };
   const createUser = async (req, res) => {
-    res.json(await dao.createUser(req.body));
-  };
-  const deleteUser = async (req, res) => {
-    await dao.deleteUser(req.params.userId);
-    res.sendStatus(200);
+    const user = await dao.createUser(req.body);
+    res.json(user);
   };
   app.post("/api/users/signup", signup);
   app.post("/api/users/signin", signin);
   app.post("/api/users/signout", signout);
   app.get("/api/users/profile", profile);
+  app.get("/api/users", findAllUsers);
+  app.get("/api/users/:userId", findUserById);
   app.put("/api/users/:userId", updateUser);
   app.get("/api/courses/:cid/users", findUsersForCourse);
   app.post("/api/users", createUser);
-  app.delete("/api/users/:userId", deleteUser);
+  app.delete("/api/users/:userId", async (req, res) => {
+    const status = await dao.deleteUser(req.params.userId);
+    res.json(status);
+  });
 }
