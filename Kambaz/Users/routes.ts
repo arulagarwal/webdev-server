@@ -1,5 +1,5 @@
 import UsersDao from "./dao";
-export default function UserRoutes(app, db) {
+export default function UserRoutes(app) {
   const dao = UsersDao();
   const signin = async (req, res) => {
     const { username, password } = req.body;
@@ -63,18 +63,6 @@ export default function UserRoutes(app, db) {
     }
     res.json(currentUser);
   };
-  const findUsersForCourse = async (req, res) => {
-    const users = await dao.findAllUsers();
-    const { enrollments } = db;
-    res.json(
-      users.filter((user) =>
-        enrollments.some(
-          (enrollment) =>
-            enrollment.user === user._id && enrollment.course === req.params.cid,
-        ),
-      ),
-    );
-  };
   const createUser = async (req, res) => {
     const user = await dao.createUser(req.body);
     res.json(user);
@@ -86,7 +74,6 @@ export default function UserRoutes(app, db) {
   app.get("/api/users", findAllUsers);
   app.get("/api/users/:userId", findUserById);
   app.put("/api/users/:userId", updateUser);
-  app.get("/api/courses/:cid/users", findUsersForCourse);
   app.post("/api/users", createUser);
   app.delete("/api/users/:userId", async (req, res) => {
     const status = await dao.deleteUser(req.params.userId);

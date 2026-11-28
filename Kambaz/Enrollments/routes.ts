@@ -1,6 +1,6 @@
 import EnrollmentsDao from "./dao";
-export default function EnrollmentRoutes(app, db) {
-  const dao = EnrollmentsDao(db);
+export default function EnrollmentRoutes(app) {
+  const dao = EnrollmentsDao();
   const resolveUserId = (req, res) => {
     let { uid } = req.params;
     if (uid === "current") {
