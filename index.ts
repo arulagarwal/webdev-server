@@ -1,5 +1,6 @@
 import "dotenv/config";
 import mongoose from "mongoose";
+// load the mongoose library
 import express from "express";
 import cors from "cors";
 import session from "express-session";
@@ -16,6 +17,7 @@ const CONNECTION_STRING =
   process.env.DATABASE_CONNECTION_STRING ||
   "mongodb://127.0.0.1:27017/kambaz";
 await mongoose.connect(CONNECTION_STRING);
+// connect to the kambaz database
 const app = express();
 app.use(cors({
   credentials: true,
